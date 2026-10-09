@@ -11,9 +11,21 @@
 ## Откуда взялись
 
 Это снимок живой dev-базы (`pg_dump --schema-only` и `pg_dump --data-only` по справочникам),
-снятый в [kogda-igra-net](https://github.com/leotsarev/kogda-igra-net) скриптом
-`utils/fetch-dev-db.ps1`. Dev и prod — две базы на одном сервере PostgreSQL 15.18, структура у них
-одинаковая.
+снятый скриптом `utils/migrate-db/fetch-dev-schema.ps1`. Dev и prod — две базы на одном сервере
+PostgreSQL 15.18, структура у них одинаковая. Переснять (нужен пароль от dev):
+
+```powershell
+$env:KOGDA_DEV_PASSWORD = '<пароль kogda-dev>'
+./utils/migrate-db/fetch-dev-schema.ps1
+```
+
+## Кто ещё пользуется
+
+`db/init/` копируется в Docker-образ сайта как `/db-init`. Compat-тесты
+[kogda-igra-net](https://github.com/leotsarev/kogda-igra-net) берут схему оттуда — из того же
+образа, против которого гоняются. Поэтому схема в этом каталоге должна соответствовать коду в
+той же ревизии: колонка, которую код уже использует, но которой нет в `01-schema.sql`, уронит
+тесты.
 
 Схема досталась от конвертации из MySQL через pgloader, отсюда имена индексов вида
 `idx_16887_primary`, повсеместные `bigint`/`text` и nullable-колонки. Таблицы `news`, `news_tags`,

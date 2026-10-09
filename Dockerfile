@@ -21,4 +21,8 @@ RUN a2dissite 000-default && a2ensite kogda
 # Код приложения
 COPY ./public_html /var/www/html
 
+# Схема БД той же версии, что и код: compat-тесты kogda-igra-net берут её прямо из образа.
+# Вне document root — Apache её не отдаёт.
+COPY ./db/init /db-init
+
 EXPOSE 8080
